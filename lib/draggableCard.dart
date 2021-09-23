@@ -5,14 +5,20 @@ class DraggableCard extends StatefulWidget {
   @override
   _DraggableCardState createState() => _DraggableCardState();
 
-  final int transformIndex;
+  int transformIndex;
   final double transformDistance;
   final int numID;
+  Function(double, int, int) onPositionChange;
+  int stackNumber;
+  int stackCardIndex;
 
   DraggableCard({
     required this.transformIndex,
     this.transformDistance = 15.0,
     required this.numID,
+    required this.onPositionChange,
+    required this.stackNumber,
+    required this.stackCardIndex,
   });
 }
 
@@ -42,6 +48,15 @@ class _DraggableCardState extends State<DraggableCard>
     super.dispose();
   }
 
+  void getPositionAtDrop() {
+    final RenderBox? renderBoxRed =
+        key.currentContext!.findRenderObject() as RenderBox?;
+    final positionRed = renderBoxRed!.localToGlobal(Offset.zero);
+    print("POSITION at Card Drop: ${positionRed.dx} ");
+    widget.onPositionChange(
+        positionRed.dx, widget.stackNumber, widget.stackCardIndex);
+  }
+
   void _runAnimation(Offset pixelsPerSecond, Size size) {
     _animation = _animationController.drive(
       AlignmentTween(
@@ -58,7 +73,7 @@ class _DraggableCardState extends State<DraggableCard>
 
     const spring = SpringDescription(
       mass: 30,
-      stiffness: 1,
+      stiffness: 0.5,
       damping: 1,
     );
 
@@ -90,14 +105,10 @@ class _DraggableCardState extends State<DraggableCard>
         setState(() {
           isSelected = !isSelected;
         });
+        getPositionAtDrop();
+
         _runAnimation(details.velocity.pixelsPerSecond, size);
       },
-      // onTap: () {
-      //   print('id: ${widget.numID}');
-      //   setState(() {
-      //     isSelected = !isSelected;
-      //   });
-      // },
       child: Container(
         width: 40,
         height: 60,

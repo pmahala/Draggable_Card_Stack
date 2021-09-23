@@ -51,6 +51,43 @@ class _PlayAreaState extends State<PlayArea> {
         DraggableCard tempCard = DraggableCard(
           transformIndex: j,
           numID: cardIndex++,
+          onPositionChange: (xPos, stackNo, cardIndex) {
+            if (stackNo == 0) {
+              if (xPos >= xCoordinatesOfStacks[stackNo] &&
+                  xPos < xCoordinatesOfStacks[stackNo + 1]) {
+                return;
+              } else if (xPos >= xCoordinatesOfStacks[stackNo + 1]) {
+                DraggableCard card =
+                    decks.elementAt(stackNo).elementAt(cardIndex);
+                decks.elementAt(stackNo).removeAt(cardIndex);
+                card.transformIndex = decks.elementAt(stackNo + 1).length;
+                decks.elementAt(stackNo + 1).add(card);
+                card.stackNumber = stackNo + 1;
+                card.stackCardIndex = decks.elementAt(stackNo + 1).length - 1;
+                rowItem = [];
+                for (int i = 0; i < numOfDecks; i++) {
+                  Widget deckItem = Flexible(
+                    key: _keys[i],
+                    child: Center(
+                      child: Stack(
+                        children: decks[i],
+                      ),
+                    ),
+                  );
+                  rowItem.add(deckItem);
+                }
+                setState(() {
+                  currentRow = Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: rowItem,
+                  );
+                });
+              }
+            }
+          },
+          stackNumber: i,
+          stackCardIndex: j,
         );
         tempCardDeck.add(tempCard);
       }
