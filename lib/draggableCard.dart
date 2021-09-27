@@ -96,8 +96,8 @@ class _DraggableCardState extends State<DraggableCard>
       onPanUpdate: (details) {
         setState(() {
           _dragAlignment += Alignment(
-            details.delta.dx / (size.width / 2),
-            details.delta.dy / (size.height / 2),
+            details.delta.dx / (size.width / 4),
+            details.delta.dy / (size.height / 4),
           );
         });
       },
